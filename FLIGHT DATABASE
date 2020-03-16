@@ -1,0 +1,130 @@
+Flight Database
+drop database dbFlight;
+create database dbFlight;
+use dbFlight;
+
+/*drop table AIRCRAFT;*/
+
+create table if not exists AIRCRAFT(
+	iAID int not null,
+	vAname varchar(15),
+	iCrusing_range int,
+	primary key (iAID));
+
+/*drop table FLIGHTS;*/
+
+create table if not exists FLIGHTS(
+	iNo int,
+	vFrom varchar(15),
+	vTo varchar(15),
+	iDistance int,
+	vDeparts varchar(15),
+	vArrives varchar(15),
+	iPrices int,
+	foreign key (iNo) references AIRCRAFT(iAID) on delete set null);
+
+/*drop table EMPLOYEES;*/
+
+create table if not exists EMPLOYEES(
+	iEID int not null,
+	vEname varchar(15),
+	iSalary int,
+	primary key (iEID));
+
+/*drop table CERTIFIED;*/
+
+create table if not exists CERTIFIED(
+	iEID int,
+	iAID int,
+	foreign key (iEID) references EMPLOYEES (iEID) on delete set null,
+	foreign key (iAID) references AIRCRAFT (iAID) on delete set null);
+
+	
+-- truncate table AIRCRAFT;
+insert into AIRCRAFT value(1001,'Jet airways',7000);
+insert into AIRCRAFT value(1002,'Boing',6000);
+insert into AIRCRAFT value(1003,'Air Zealand',3000);
+insert into AIRCRAFT value(1004,'Qatar Airways',4000);
+insert into AIRCRAFT value(1005,'Qantas',6000);
+insert into AIRCRAFT value(1006,'Vir Australia',2000);
+insert into AIRCRAFT value(1007,'Emirates',1000);
+insert into AIRCRAFT value(1008,'All Airways',9000);
+insert into AIRCRAFT value(1009,'EVA Air',8000);
+insert into AIRCRAFT value(1010,'Air India',5000);
+
+-- truncate table FLIGHTS;
+insert into FLIGHTS value(1004,'Maldives','Singapore',3404,'15:15','20:20',11395);
+insert into FLIGHTS value(1003,'Monaco','Shanghai',2010,'15:25','20:55',10860);
+insert into FLIGHTS value(1007,'Delhi','Bangalore',2300,'12:15','15:10',3000);
+insert into FLIGHTS value(1006,'Chennai','Bangalore',350,'15:00','16:00',2500);
+insert into FLIGHTS value(1008,'Bangalore','London',8030,'15:15','13:20',35000);
+insert into FLIGHTS value(1009,'Delhi','London',6900,'15:15','20:20',34000);
+insert into FLIGHTS value(1006,'Bangalore','Mumbai',1200,'15:15','20:20',3500);
+insert into FLIGHTS value(1008,'Bangalore','Frankfurt',7400,'19:15','13:18',40000);
+insert into FLIGHTS value(1007,'Bangalore','Kolkata',900,'15:15','20:20',4000);
+insert into FLIGHTS value(1001,'Maldives','Santorini',6200,'15:50','21:30',20000);
+
+-- truncate table EMPLOYEES;
+insert into EMPLOYEES value(1101, 'Jack', 90000);   
+insert into EMPLOYEES value(1102, 'Jill', 80000);
+insert into EMPLOYEES value(1103, 'Jenny', 70000);
+insert into EMPLOYEES value(1104, 'James', 85000);
+insert into EMPLOYEES value(1105, 'Jude', 95000);
+insert into EMPLOYEES value(1106, 'Jhonas', 110000);
+insert into EMPLOYEES value(1107, 'Jonathan', 750000);
+insert into EMPLOYEES value(1108, 'Jane', 89000);
+insert into EMPLOYEES value(1109, 'Jacqueline', 79000);
+insert into EMPLOYEES value(1110, 'Joe', 77000);
+
+-- truncate table CERTIFIED;
+insert into CERTIFIED value(1101,1001);
+insert into CERTIFIED value(1102,1002);
+insert into CERTIFIED value(1103,1003);
+insert into CERTIFIED value(1104,1004);
+insert into CERTIFIED value(1105,1005);
+insert into CERTIFIED value(1106,1006);
+insert into CERTIFIED value(1107,1007);
+insert into CERTIFIED value(1108,1008);
+insert into CERTIFIED value(1109,1009);
+insert into CERTIFIED value(1110,1010);
+insert into CERTIFIED value(1106,1007);
+insert into CERTIFIED value(1107,1008);
+insert into CERTIFIED value(1108,1009);
+insert into CERTIFIED value(1109,1010);
+insert into CERTIFIED value(1110,1001);
+insert into CERTIFIED value(1106,1008);
+insert into CERTIFIED value(1107,1009);
+insert into CERTIFIED value(1108,1010);
+insert into CERTIFIED value(1109,1001);
+insert into CERTIFIED value(1110,1002);
+
+select vAname 
+from AIRCRAFT A, CERTIFIED C, EMPLOYEES E
+where A.iAID = C.iAID and C.iEID = E.iEID and E.iSalary > 100000;
+
+
+select C.iEID, max(A.iCrusing_range)
+from AIRCRAFT A, CERTIFIED C
+where A.iAID = C.iAID
+group by iEID
+having count(C.iAID)>2;
+
+select distinct vEname
+from EMPLOYEES E, CERTIFIED C, AIRCRAFT A, FLIGHTS F
+where E.iEID = C.iEID and C.iAID = A.iAID and A.iAID = F.iNo and E.iSalary > (
+			select min(iPrices) 
+			from FLIGHTS
+			where vFrom = "Bangalore" and vTo = "Frankfurt");
+
+select A.vAname, avg(E.iSalary)
+from AIRCRAFT A, EMPLOYEES E, CERTIFIED C
+where A.iAID = C.iAID and C.iEID = E.iEID and A.iCrusing_range > 2000
+group by A.vAname;
+
+select E.vEname
+from EMPLOYEES E, CERTIFIED C, AIRCRAFT A
+where E.iEID = C.iEID and C.iAID = A.iAID and A.vAname = 'Boing';
+
+select A.iAID
+from AIRCRAFT A, FLIGHTS F
+where A.iAID = F.iNo and F.vFrom = 'Bangalore' and F.vTo = 'Mumbai'

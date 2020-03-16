@@ -1,0 +1,101 @@
+drop database dbOrder;
+create database dbOrder;
+use dbOrder;
+
+create table if not exists tblSalesman(
+	iSalesmanID int not null,
+	vName varchar(256),
+	vCity varchar(256),
+	nCommission numeric(8,2),
+	primary key (iSalesmanID));
+
+create table if not exists tblCustomer(
+	iCustomerID int not null,
+	vCustName varchar(256),
+	vCity varchar(256),
+	iGrade int,
+	iSalesmanID int,
+	primary key (iCustomerID),
+	foreign key (iSalesmanID) references tblSalesman(iSalesmanID) on delete cascade
+	);
+
+create table if not exists tblOrder(
+	iOrder_No int not null,
+	iPurchase_Amount int,
+	dOrder_Date date,
+	iCustomerID int,
+	iSalesmanID int,
+	primary key (iOrder_No),
+	foreign key (iCustomerID) references tblCustomer(iCustomerID) on delete cascade,
+	foreign key (iSalesmanID) references tblSalesman(iSalesmanID) on delete cascade
+	);
+
+-- delete table tblSalesman;
+insert into tblSalesman values
+	(1101, 'Jack', 'Bangalore',90000),
+	(1102, 'Jill', 'New Delhi',80000),
+	(1103, 'Jenny', 'New Delhi', 70000),
+	(1104, 'James', 'Bangalore',85000),
+	(1105, 'Jude', 'Mumbai',95000),
+	(1106, 'Jhonas', 'New Delhi',110000),
+	(1107, 'Jonathan', 'Bangalore',750000),
+	(1108, 'Jane', 'Mumbai',89000),
+	(1109, 'Jacqueline','New Delhi', 79000),
+	(1110, 'Joe', 'Mumbai', 77000);
+
+-- delete table tblCustomer;
+insert into tblCustomer values
+	(1001, 'Kim', 'Bangalore',1,1101),
+	(1002, 'Kunal', 'New Delhi',3,1104),
+	(1003, 'Kumar', 'New Delhi',5, 1106),
+	(1004, 'Kamath', 'Bangalore',2,1104),
+	(1005, 'Kanav', 'Mumbai',4,1103),
+	(1006, 'Karan', 'New Delhi',2,1103),
+	(1007, 'Kiran', 'Bangalore',2,1107),
+	(1008, 'Kundan', 'Mumbai',4,1108),
+	(1009, 'Katherine','New Delhi',3, 1106),
+	(1010, 'Kate', 'Mumbai', 1,1109);
+
+	
+-- delete tbale tblOrder;
+insert into tblOrder values
+	('1',1000,'2017-08-01',1001,1101),
+('2',2000,'2017-08-02',1002,1102),
+('3',3000,'2017-08-03',1003,1103),
+('4',4000,'2017-08-04',1004,1104),
+('5',5000,'2017-08-05',1005,1105),
+('6',6000,'2017-08-01',1006,1106),
+('7',7000,'2017-08-06',1007,1107),
+('8',8000,'2017-08-06',1008,1108),
+('9',9000,'2017-08-07',1009,1109),
+('10',10000,'2013-08-08',1010,1110);
+
+
+/* Queries */ 
+
+select count(iCustomerID)
+from tblCustomer
+where iGrade>(select avg(iGrade)
+			from tblCustomer
+			where vCity = 'Bangalore');
+
+select vName, count(iCustomerID)
+from tblSalesman S,tblCustomer C
+where S.iSalesmanID = C.iSalesmanID
+group by vName
+having count(iCustomerID) > 1;
+
+
+(select vName from tblSalesman S,tblCustomer C 
+	where S.iSalesmanID = C.iSalesmanID and S.vCity = C.vCity) union 
+	(select vName from tblSalesman 
+	where iSalesmanID not in (select S1.iSalesmanID from tblSalesman S1,tblCustomer C1 
+		where S1.iSalesmanID=C1.iSalesmanID and C1.vCity=S1.vCity));
+
+-- select * from Sales_higher_order;
+
+create view Sales_higher_order as 
+	select iSalesmanID, O.iPurchase_Amount from tblOrder O
+	where O.iPurchase_Amount = (select Max(O.iPurchase_Amount) from tblOrder O where O.dOrder_Date = '2017-08-06');
+
+select * from Sales_higher_order;

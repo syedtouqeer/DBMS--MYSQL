@@ -1,0 +1,213 @@
+drop database dbLibrary;
+create database dbLibrary;
+use dbLibrary;
+
+create table tblPublisher
+(
+ vPubName varchar(30),
+ vAddress varchar(30) not null,
+ iPhone int(10),
+ primary key(vPubName)
+);
+
+create table tblBook
+(
+ iBookID int not null,
+ vTitle varchar(20),
+ vPubName varchar(20) ,
+ iPubYear int,
+ primary key(iBookID,vPubName),
+ foreign key(vPubName) references tblPublisher(vPubName) on delete cascade
+);
+
+create table tblAuthor
+(
+ iBookID int ,
+ vAuthName varchar(30),
+ primary key(iBookID),
+ foreign key(iBookID) references tblBook(iBookID) on delete cascade
+);
+
+create table tblBranch
+(
+ iBranchID int,
+ vBranchName varchar(20) ,
+ vAddress varchar(200),
+ primary key(iBranchID)
+);
+
+create table tblBorrower
+(
+ iCardNo int,
+ vName varchar(20),
+ primary key(iCardNo)
+);
+
+create table tblLending
+(
+ iBookID int  ,
+ iBranchID int ,
+ iCardNo int,
+ dDateOut date,
+ dDueDate date ,
+ primary key(iBookID,iBranchID,iCardNo),
+ foreign key(iBookID) references tblBook(iBookID) on delete cascade,
+ foreign key(iBranchID) references tblBranch(iBranchID) on delete cascade,
+ foreign key(iCardNo) references tblBorrower(iCardNo) on delete cascade
+);
+
+create table tblBookCopies
+(
+ iBookID int ,
+ iBranchID int  ,
+ iNoOfCopies int  ,
+ primary key(iBookID,iBranchID),
+ foreign key(iBookID) references tblBook(iBookID) on delete cascade,
+ foreign key(iBranchID) references tblBranch(iBranchID) on delete cascade
+
+);
+
+Select 'create table finished';
+
+
+insert into tblPublisher values("Pearson","banglore","77002299");
+insert into tblPublisher values("Daniels","pune","770022549");
+insert into tblPublisher values("Lmaar","mumbai","77002199");
+insert into tblPublisher values("Wilson","sanaa","77002229");
+insert into tblPublisher values("Oxford","thamar","77202299");
+insert into tblPublisher values("Jupiter","aden","77002299");
+insert into tblPublisher values("McGraw","us","77002299");
+
+select 'insert into tblPublisher finished';
+
+
+insert into tblBook values (1,"learn html","Pearson",2012);
+insert into tblBook values (2,"learn java","Pearson",2005);
+insert into tblBook values (3,"learn python","Daniels",2016);
+insert into tblBook values (4,"learn anythin","Wilson",2010);
+insert into tblBook values (5,"c#","Oxford",2011);
+insert into tblBook values (6,"linux","Jupiter",2018);
+
+select 'insert into tblBook finished';
+
+insert into tblAuthor values (1,"Robert");
+insert into tblAuthor values (2,"Bill");
+insert into tblAuthor values (3,"Jack");
+insert into tblAuthor values (4,"Jeff");
+insert into tblAuthor values (5,"Ramesh");
+insert into tblAuthor values (6,"Rohit");
+
+select 'insert into tblAuthor finished';
+
+
+
+insert into tblBranch values (1,"hkbk","banglore");
+insert into tblBranch values (2,"mit","germany");
+insert into tblBranch values (3,"lcc","us");
+insert into tblBranch values (4,"ppm","mysor");
+insert into tblBranch values (5,"kns","mumbai");
+
+select 'insert into tblBranch finished';
+
+
+insert into tblBorrower values (1,"James");
+insert into tblBorrower values (2,"Josh");
+insert into tblBorrower values (3,"George");
+insert into tblBorrower values (4,"Manoj");
+insert into tblBorrower values (5,"Manish");
+insert into tblBorrower values (6,"Warren");
+
+select 'insert into tblBorrower finished';
+
+insert into tblLending values (1,1,1,"2018-08-01","2018-08-10");
+insert into tblLending values (2,1,1,"2018-08-01","2018-08-10");
+insert into tblLending values (3,1,1,"2018-08-01","2018-02-10");
+-- insert into tblLending values (2,1,1,"2018-02-01","2018-08-10");
+insert into tblLending values (4,1,1,"2018-08-01","2018-06-10");
+insert into tblLending values (3,1,2,"2018-01-01","2018-08-10");
+insert into tblLending values (1,1,3,"2018-01-01","2018-08-10");
+insert into tblLending values (1,2,1,"2018-04-01","2018-04-10");
+insert into tblLending values (3,1,4,"2018-08-01","2018-08-10");
+insert into tblLending values (3,2,3,"2018-04-01","2018-03-10");
+insert into tblLending values (4,2,3,"2018-05-01","2018-08-10");
+insert into tblLending values (5,2,3,"2018-01-01","2018-05-10");
+-- insert into tblLending values (6,1,4,"2018-01-01","2018-07-10");
+-- -- insert into tblLending values (3,1,4,"2018-02-01","2018-08-10");
+-- insert into tblLending values (4,1,4,"2018-03-01","2018-08-10");
+-- insert into tblLending values (5,1,4,"2018-04-01","2018-08-10");
+-- insert into tblLending values (6,2,2,"2018-04-01","2018-08-10");
+-- insert into tblLending values (4,4,2,"2018-01-01","2018-08-10");
+-- -- insert into tblLending values (3,1,2,"2018-01-01","2018-08-20");
+-- insert into tblLending values (2,1,2,"2018-02-01","2018-08-10");
+-- insert into tblLending values (5,1,2,"2018-03-01","2018-08-10");
+-- insert into tblLending values (6,3,2,"2018-01-01","2018-08-10");
+-- insert into tblLending values (2,4,4,"2018-04-01","2018-08-10");
+-- -- insert into tblLending values (5,1,4,"2018-01-01","2018-08-10");
+-- insert into tblLending values (6,3,4,"2018-01-01","2018-08-10");
+-- insert into tblLending values (2,4,6,"2018-01-01","2018-08-10");
+
+
+select 'insert into tblLending finished';
+
+
+insert into tblBookCopies values (1,1,2);
+insert into tblBookCopies values (2,2,3);
+insert into tblBookCopies values (3,3,4);
+insert into tblBookCopies values (4,4,1);
+insert into tblBookCopies values (5,5,5);
+insert into tblBookCopies values (6,1,2);
+insert into tblBookCopies values (1,3,6);
+insert into tblBookCopies values (1,5,2);
+insert into tblBookCopies values (5,1,3);
+insert into tblBookCopies values (4,1,2);
+insert into tblBookCopies values (1,4,0);
+
+select 'insert into tblBookCopies finished';
+
+
+SELECT LB.vBranchName,
+    B.iBookID,
+    B.vTitle,
+    B.vPubName,
+    BC.iNoOfCopies,
+    A.vAuthName AS 'author vAuthName'
+FROM tblBook B, tblBookCopies BC, tblAuthor A, tblBranch LB
+WHERE B.iBookID = A.iBookID AND BC.iBookID = B.iBookID AND BC.iBranchID = LB.iBranchID
+GROUP BY LB.vBranchName,B.iBookID,B.vTitle,B.vPubName,A.vAuthName,BC.iNoOfCopies;
+select 'First OUTPUT finished';
+
+SELECT 
+    L.iCardNo
+FROM tblLending L
+WHERE dDateOut BETWEEN '2017-11-01' AND '2018-08-01' 
+GROUP BY L.iCardNo
+HAVING COUNT(*) > 3;
+
+select 'Second OUTPUT finished';
+
+select 'Third OUTPUT - Before delete ';
+
+SELECT *
+FROM tblLending;
+
+DELETE FROM tblBook 
+WHERE iBookID = 1;
+
+select 'Third OUTPUT - After delete ';
+
+SELECT *
+FROM tblLending;
+
+SELECT iBookID,vTitle,vPubName,iPubYear
+FROM tblBook
+GROUP BY iPubYear,iBookID,vTitle,vPubName;
+
+select 'Fourth  OUTPUT finished';
+
+CREATE VIEW vwBooksAvialable AS
+SELECT B.iBookID, B.vTitle,C.iNoOfCopies
+FROM tblBookCopies C,tblBranch L,tblBook B
+where B.iBookID = C.iBookID AND L.iBranchID = C.iBranchID AND C.iNoOfCopies > 0;
+
+
+select * from vwBooksAvialable ; 
